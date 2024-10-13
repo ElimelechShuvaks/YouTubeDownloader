@@ -1,6 +1,6 @@
-from flask import Flask, request, render_template, send_file
+from tempfile import mktemp
+from flask import Flask, after_this_request, request, render_template, send_file
 import yt_dlp
-import os
 
 app = Flask(__name__)
 
@@ -23,13 +23,15 @@ def index():
 @app.route('/download', methods=['POST'])
 def download():
     video_url = request.form['url']  # קבלת ה-URL מהמשתמש
-    output_file = "downloaded_video.mp4"
-    
+    output_file = mktemp(suffix=".mp4")
+
     # הורדת הסרטון
     download_youtube_video(video_url, output_file)
-    
+
     # שליחת הקובץ חזרה למשתמש כהורדה
-    return send_file(output_file, as_attachment=True)
+    resp = send_file(output_file, as_attachment=True, download_name="downloaded_video.mp4")
+    return resp
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
