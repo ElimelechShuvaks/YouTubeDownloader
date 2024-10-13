@@ -1,39 +1,35 @@
-import os
+from flask import Flask, request, render_template, send_file
 import yt_dlp
-import tempfile
-
-from flask import Flask, render_template, request, send_file
+import os
 
 app = Flask(__name__)
 
-# פונקציה להורדת הוידאו
 def download_youtube_video(url, output_path):
+    # הגדרות להורדה
     ydl_opts = {
         'format': 'best',
         'outtmpl': output_path,
-        'nocheckcertificate': True
+        'nocheckcertificate': True  # משבית את בדיקת ה-SSL
     }
-
+    
+    # הורדת הסרטון
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html')  # מציג את דף הבית (פורמט HTML פשוט שיבקש את ה-URL)
 
 @app.route('/download', methods=['POST'])
 def download():
-    video_url = request.form['url']
+    video_url = request.form['url']  # קבלת ה-URL מהמשתמש
+    output_file = "downloaded_video.mp4"
     
-    # יצירת קובץ זמני
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_file:
-        tmp_file_path = tmp_file.name
+    # הורדת הסרטון
+    download_youtube_video(video_url, output_file)
     
-    # הורדת הוידאו לקובץ זמני
-    download_youtube_video(video_url, tmp_file_path)
-    
-    # שליחת הקובץ להורדה למשתמש
-    return send_file(tmp_file_path, as_attachment=True, download_name="downloaded_video.mp4")
+    # שליחת הקובץ חזרה למשתמש כהורדה
+    return send_file(output_file, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
