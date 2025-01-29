@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>רשימת סרטונים מהערוץ</title>
+</head>
+<body>
+    <h1>רשימת סרטונים מהערוץ</h1>
+    <ul>
+        {% for video in videos %}
+            <li>
+                <strong>Title:</strong> {{ video.title }}<br>
+                <strong>Video URL:</strong> <a href="{{ video.url }}" target="_blank">{{ video.url }}</a><br>
+                <strong>Upload Date:</strong> {{ video.upload_date }}
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+    <a href="/">חזרה לדף הראשי</a>
+</body>
+</html>
